@@ -26,20 +26,20 @@
     <test.classes.directory>${project.build.directory}/test-classes</test.classes.directory>
     <test.resources.directory>${project.build.directory}/test-resources</test.resources.directory>
  
-    <jbossws.cxf.version>4.2.2-SNAPSHOT</jbossws.cxf.version>
-    <jbossws.shared.testsuite.version>4.2.0-SNAPSHOT</jbossws.shared.testsuite.version>
+    <jbossws.cxf.version>4.3.0.Beta2</jbossws.cxf.version>
+    <jbossws.shared.testsuite.version>4.3.0.Beta2</jbossws.shared.testsuite.version>
 
     <junit.version>4.10</junit.version>
     <log4j.version>1.2.14</log4j.version>
 
     <jboss720.version>7.2.0.Final</jboss720.version>
-    <wildfly800.version>8.0.0.Beta1-SNAPSHOT</wildfly800.version>
+    <wildfly800.version>8.0.1.Final-SNAPSHOT</wildfly800.version>
 
     <ejb.api.version>1.0.1.Final</ejb.api.version>
     <jaxb.api.version>1.0.3.Final</jaxb.api.version>
     <jaxws.api.version>2.0.0.Final</jaxws.api.version>
     <jsr181.api.version>1.0-MR1</jsr181.api.version>
-    <picketlink.version>2.1.4.Final</picketlink.version>
+    <picketlink.version>2.1.7.Final</picketlink.version>
     <org.slf4j.version>1.6.1</org.slf4j.version>
   </properties>
 
@@ -53,8 +53,8 @@
   <!-- Dependencies -->
   <dependencies>
     <dependency>
-      <groupId>org.jboss.ws</groupId>
-      <artifactId>jbossws-shared-testsuite</artifactId>
+      <groupId>org.jboss.ws.cxf</groupId>
+      <artifactId>jbossws-cxf-shared-tests</artifactId>
       <version>${jbossws.shared.testsuite.version}</version>
       <scope>test</scope>
     </dependency>
@@ -62,6 +62,18 @@
     <dependency>
       <groupId>org.jboss.ws.cxf</groupId>
       <artifactId>jbossws-cxf-client</artifactId>
+      <version>${jbossws.cxf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.ws.cxf</groupId>
+      <artifactId>jbossws-cxf-server</artifactId>
+      <version>${jbossws.cxf.version}</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.jboss.ws.cxf</groupId>
+      <artifactId>jbossws-cxf-test-utils</artifactId>
       <version>${jbossws.cxf.version}</version>
     </dependency>
 
@@ -483,8 +495,8 @@
       </properties>
       <dependencies>
         <dependency>
-          <groupId>org.wildlfy</groupId>
-          <artifactId>wildfly-webservices-server-integration</artifactId>
+          <groupId>org.wildfly</groupId>
+          <artifactId>wildfly-webservices-tests-integration</artifactId>
           <version>${jboss.version}</version>
         </dependency>
       </dependencies>
