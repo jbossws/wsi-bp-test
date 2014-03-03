@@ -156,7 +156,7 @@ public final class WSSecurityPolicyExamples23xTestCase extends JBossWSTest
       reqCtx.put(SecurityConstants.ENCRYPT_PROPERTIES, Thread.currentThread().getContextClassLoader().getResource("META-INF/alice.properties"));
       reqCtx.put(SecurityConstants.SIGNATURE_USERNAME, "alice");
       reqCtx.put(SecurityConstants.ENCRYPT_USERNAME, "bob");
-      ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, (serviceURL + "SecurityService2314").replaceFirst("8080", "7070"));
+      //((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, (serviceURL + "SecurityService2314").replaceFirst("8080", "7070"));
 
       assertTrue(proxy.sayHello().equals("Hello - (WSS1.0) SAML1.1 Sender Vouches with X.509 Certificates, Sign, Optional Encrypt"));
    }
@@ -222,7 +222,7 @@ public final class WSSecurityPolicyExamples23xTestCase extends JBossWSTest
       cbh.setConfirmationMethod("urn:oasis:names:tc:SAML:2.0:cm:sender-vouches");
       cbh.setSaml2(true);
       ((BindingProvider)proxy).getRequestContext().put(SecurityConstants.SAML_CALLBACK_HANDLER, cbh);
-      //((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, (serviceURLHttps + "SecurityService2322").replaceFirst("8080", "7070"));
+      //((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, (serviceURLHttps + "SecurityService2322").replaceFirst("8443", "7070"));
 
       assertTrue(proxy.sayHello().equals("Hello - (WSS1.1) SAML2.0 Sender Vouches over SSL"));
    }
