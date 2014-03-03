@@ -76,12 +76,13 @@ public final class WSSecurityPolicyExamples23xTestCase extends JBossWSTest
       }
       else
       {
-         sslOptions.put("keystore-path", System.getProperty("org.jboss.ws.testsuite.server.keystore"));
-         sslOptions.put("keystore-password", "changeit");
-         sslOptions.put("verify-client", "true"); //enable SSL mutual authentication (https client cert is checked on server side)
-         sslOptions.put("alias", "tomcat");
-         sslOptions.put("ca-certificate-file", System.getProperty("org.jboss.ws.testsuite.server.truststore"));
-         sslOptions.put("ca-certificate-password", "changeit");
+         sslOptions.put("server-identity.ssl.keystore-path", System.getProperty("org.jboss.ws.testsuite.server.keystore"));
+         sslOptions.put("server-identity.ssl.keystore-password", "changeit");
+         sslOptions.put("server-identity.ssl.alias", "tomcat");
+         //enable SSL mutual authentication (https client cert is checked on server side)
+         sslOptions.put("verify-client", "REQUESTED");
+         sslOptions.put("authentication.truststore.keystore-path", System.getProperty("org.jboss.ws.testsuite.server.truststore"));
+         sslOptions.put("authentication.truststore.keystore-password", "changeit");
       }
       setup.setHttpsConnectorRequirement(sslOptions);
       return setup;
@@ -221,7 +222,7 @@ public final class WSSecurityPolicyExamples23xTestCase extends JBossWSTest
       cbh.setConfirmationMethod("urn:oasis:names:tc:SAML:2.0:cm:sender-vouches");
       cbh.setSaml2(true);
       ((BindingProvider)proxy).getRequestContext().put(SecurityConstants.SAML_CALLBACK_HANDLER, cbh);
-      ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, (serviceURL + "SecurityService2322").replaceFirst("8080", "7070"));
+      //((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, (serviceURLHttps + "SecurityService2322").replaceFirst("8080", "7070"));
 
       assertTrue(proxy.sayHello().equals("Hello - (WSS1.1) SAML2.0 Sender Vouches over SSL"));
    }

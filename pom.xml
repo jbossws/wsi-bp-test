@@ -47,7 +47,7 @@
   <modules>
     <module>bp12-tests</module>
     <module>bp20-tests</module>
-    <module>bsp12-tests</module>
+    <module>bsp11-tests</module>
   </modules>
 
   <!-- Dependencies -->
