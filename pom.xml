@@ -26,9 +26,9 @@
     <test.classes.directory>${project.build.directory}/test-classes</test.classes.directory>
     <test.resources.directory>${project.build.directory}/test-resources</test.resources.directory>
  
-    <jbossws.cxf.version>4.3.0.Beta2</jbossws.cxf.version>
-    <jbossws.shared.testsuite.version>4.3.0.CR1</jbossws.shared.testsuite.version>
-    <jbossws.cxf-test-utils.version>4.3.0.CR1</jbossws.cxf-test-utils.version>
+    <jbossws.cxf.version>4.3.0.Final</jbossws.cxf.version>
+    <jbossws.shared.testsuite.version>4.3.0.Final</jbossws.shared.testsuite.version>
+    <jbossws.cxf-test-utils.version>4.3.0.Final</jbossws.cxf-test-utils.version>
 
     <junit.version>4.10</junit.version>
     <log4j.version>1.2.14</log4j.version>
@@ -53,12 +53,12 @@
 
   <!-- Dependencies -->
   <dependencies>
-    <dependency>
+    <!-- <dependency>
       <groupId>org.jboss.ws.cxf</groupId>
       <artifactId>jbossws-cxf-shared-tests</artifactId>
       <version>${jbossws.shared.testsuite.version}</version>
       <scope>test</scope>
-    </dependency>
+    </dependency> -->
 
     <dependency>
       <groupId>org.jboss.ws.cxf</groupId>
