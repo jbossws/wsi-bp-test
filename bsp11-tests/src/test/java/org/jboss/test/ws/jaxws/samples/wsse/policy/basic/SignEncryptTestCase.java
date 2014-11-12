@@ -21,11 +21,12 @@
  */
 package org.jboss.test.ws.jaxws.samples.wsse.policy.basic;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URL;
 
 import junit.framework.Test;
 
-import org.jboss.ws.common.IOUtils;
 import org.jboss.wsf.test.JBossWSCXFTestSetup;
 import org.jboss.wsf.test.JBossWSTest;
 
@@ -42,7 +43,9 @@ public final class SignEncryptTestCase extends JBossWSTest
    public static Test suite()
    {
       return new JBossWSCXFTestSetup(SignEncryptTestCase.class,
-            SignEncryptDeploymentArchives.CLIENT_JAR + " " + SignEncryptDeploymentArchives.CLIENT_WAR + " " + SignEncryptDeploymentArchives.SERVER_WAR);
+            "jaxws-samples-wsse-policy-sign-encrypt-client.jar " +
+            "jaxws-samples-wsse-policy-sign-encrypt-client.war " +
+            "jaxws-samples-wsse-policy-sign-encrypt.war");
    }
    
    public void testClientSide() throws Exception
@@ -63,13 +66,15 @@ public final class SignEncryptTestCase extends JBossWSTest
    {
       URL url = new URL("http://" + getServerHost() + ":8080/jaxws-samples-wsse-policy-sign-encrypt-client?" +
       		"path=/jaxws-samples-wsse-policy-sign-encrypt&method=testSignEncrypt&helper=" + SignEncryptHelper.class.getName());
-      assertEquals("1", IOUtils.readAndCloseStream(url.openStream()));
+      BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+      assertEquals("1", br.readLine());
    }
    
    public void testServerSideUsingConfigProperties() throws Exception
    {
       URL url = new URL("http://" + getServerHost() + ":8080/jaxws-samples-wsse-policy-sign-encrypt-client?" +
             "path=/jaxws-samples-wsse-policy-sign-encrypt&method=testSignEncryptUsingConfigProperties&helper=" + SignEncryptHelper.class.getName());
-      assertEquals("1", IOUtils.readAndCloseStream(url.openStream()));
+      BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+      assertEquals("1", br.readLine());
    }
 }

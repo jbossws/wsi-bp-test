@@ -31,7 +31,6 @@ import junit.framework.Test;
 
 import org.apache.cxf.ws.security.SecurityConstants;
 import org.jboss.test.ws.jaxws.samples.wsse.policy.basic.KeystorePasswordCallback;
-import org.jboss.wsf.test.CryptoHelper;
 import org.jboss.wsf.test.JBossWSCXFTestSetup;
 import org.jboss.wsf.test.JBossWSTest;
 
@@ -53,7 +52,7 @@ public final class WSSecurityPolicyExamples22xTestCase extends JBossWSTest
    public static Test suite()
    {
       return new JBossWSCXFTestSetup(WSSecurityPolicyExamples22xTestCase.class,
-            DeploymentArchives.SERVER_22X_WAR + " " + DeploymentArchives.CLIENT_JAR);
+            "jaxws-samples-wsse-policy-oasis-22x.war,jaxws-samples-wsse-policy-oasis-client.jar");
    }
    
    /**
@@ -68,15 +67,10 @@ public final class WSSecurityPolicyExamples22xTestCase extends JBossWSTest
    {
       Service service = Service.create(new URL(serviceURL + "SecurityService221?wsdl"), serviceName);
       ServiceIface proxy = (ServiceIface)service.getPort(new QName(NS, "SecurityService221Port"), ServiceIface.class);
-      setupWsse(proxy, true);
-      ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceURL + "SecurityService221".replaceFirst("8080", "7070"));
+      setupWsse(proxy);
+      ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, (serviceURL + "SecurityService221").replaceFirst("8080", "7070"));
 
-
-      try {
-         assertTrue(proxy.sayHello().equals("Hello - (WSS1.0) X.509 Certificates, Sign, Encrypt"));
-      } catch (Exception e) {
-         throw CryptoHelper.checkAndWrapException(e);
-      }
+      assertTrue(proxy.sayHello().equals("Hello - (WSS1.0) X.509 Certificates, Sign, Encrypt"));
    }
 
    /**
@@ -93,14 +87,10 @@ public final class WSSecurityPolicyExamples22xTestCase extends JBossWSTest
    {
       Service service = Service.create(new URL(serviceURL + "SecurityService222?wsdl"), serviceName);
       ServiceIface proxy = (ServiceIface)service.getPort(new QName(NS, "SecurityService222Port"), ServiceIface.class);
-      setupWsse(proxy, true);
-      ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceURL + "SecurityService222".replaceFirst("8080", "7070"));
+      setupWsse(proxy);
+      ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, (serviceURL + "SecurityService222").replaceFirst("8080", "7070"));
 
-      try {
-         assertTrue(proxy.sayHello().equals("Hello - (WSS1.0) Mutual Authentication with X.509 Certificates, Sign, Encrypt"));
-      } catch (Exception e) {
-         throw CryptoHelper.checkAndWrapException(e);
-      }
+      assertTrue(proxy.sayHello().equals("Hello - (WSS1.0) Mutual Authentication with X.509 Certificates, Sign, Encrypt"));
    }
 
    /**
@@ -117,14 +107,10 @@ public final class WSSecurityPolicyExamples22xTestCase extends JBossWSTest
    {
       Service service = Service.create(new URL(serviceURL + "SecurityService223?wsdl"), serviceName);
       ServiceIface proxy = (ServiceIface)service.getPort(new QName(NS, "SecurityService223Port"), ServiceIface.class);
-      setupWsse(proxy, true);
-      ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceURL + "SecurityService223".replaceFirst("8080", "7070"));
+      setupWsse(proxy);
+      ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, (serviceURL + "SecurityService223").replaceFirst("8080", "7070"));
 
-      try {
-         assertTrue(proxy.sayHello().equals("Hello - (WSS1.1) Anonymous with X.509 Certificates, Sign, Encrypt"));
-      } catch (Exception e) {
-         throw CryptoHelper.checkAndWrapException(e);
-      }
+      assertTrue(proxy.sayHello().equals("Hello - (WSS1.1) Anonymous with X.509 Certificates, Sign, Encrypt"));
    }
 
    /**
@@ -141,27 +127,18 @@ public final class WSSecurityPolicyExamples22xTestCase extends JBossWSTest
    {
       Service service = Service.create(new URL(serviceURL + "SecurityService224?wsdl"), serviceName);
       ServiceIface proxy = (ServiceIface)service.getPort(new QName(NS, "SecurityService224Port"), ServiceIface.class);
-      setupWsse(proxy, false);
-      ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceURL + "SecurityService224".replaceFirst("8080", "7070"));
+      setupWsse(proxy);
+      ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, (serviceURL + "SecurityService224").replaceFirst("8080", "7070"));
 
-      try {
-         assertTrue(proxy.sayHello().equals("Hello - (WSS1.1) Mutual Authentication with X.509 Certificates, Sign, Encrypt"));
-      } catch (Exception e) {
-         throw CryptoHelper.checkAndWrapException(e);
-      }
+      assertTrue(proxy.sayHello().equals("Hello - (WSS1.1) Mutual Authentication with X.509 Certificates, Sign, Encrypt"));
    }
 
-   private void setupWsse(ServiceIface proxy, boolean streaming)
+   private void setupWsse(ServiceIface proxy)
    {
       ((BindingProvider)proxy).getRequestContext().put(SecurityConstants.CALLBACK_HANDLER, new KeystorePasswordCallback());
       ((BindingProvider)proxy).getRequestContext().put(SecurityConstants.SIGNATURE_PROPERTIES, Thread.currentThread().getContextClassLoader().getResource("META-INF/alice.properties"));
       ((BindingProvider)proxy).getRequestContext().put(SecurityConstants.ENCRYPT_PROPERTIES, Thread.currentThread().getContextClassLoader().getResource("META-INF/alice.properties"));
       ((BindingProvider)proxy).getRequestContext().put(SecurityConstants.SIGNATURE_USERNAME, "alice");
       ((BindingProvider)proxy).getRequestContext().put(SecurityConstants.ENCRYPT_USERNAME, "bob");
-      if (streaming)
-      {
-         ((BindingProvider)proxy).getRequestContext().put(SecurityConstants.ENABLE_STREAMING_SECURITY, "true");
-         ((BindingProvider)proxy).getResponseContext().put(SecurityConstants.ENABLE_STREAMING_SECURITY, "true");
-      }
    }
 }

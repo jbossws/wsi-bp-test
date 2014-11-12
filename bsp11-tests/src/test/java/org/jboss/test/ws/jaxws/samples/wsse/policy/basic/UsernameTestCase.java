@@ -21,10 +21,7 @@
  */
 package org.jboss.test.ws.jaxws.samples.wsse.policy.basic;
 
-import java.io.File;
 import java.net.URL;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
@@ -33,11 +30,8 @@ import javax.xml.ws.Service;
 import junit.framework.Test;
 
 import org.apache.cxf.ws.security.SecurityConstants;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.wsf.test.JBossWSCXFTestSetup;
 import org.jboss.wsf.test.JBossWSTest;
-import org.jboss.wsf.test.JBossWSTestHelper;
-import org.jboss.wsf.test.JBossWSTestHelper.BaseDeployment;
 
 /**
  * WS-Security Policy username test case
@@ -50,32 +44,9 @@ public final class UsernameTestCase extends JBossWSTest
    private final String serviceURL = "http://" + getServerHost() + ":8080/jaxws-samples-wsse-policy-username-unsecure-transport/service";
    private final String javaFirstServiceURL = "http://" + getServerHost() + ":8080/jaxws-samples-wsse-policy-username-unsecure-transport/javafirst-service";
 
-   public static BaseDeployment<?>[] createDeployments() {
-      List<BaseDeployment<?>> list = new LinkedList<BaseDeployment<?>>();
-      list.add(new JBossWSTestHelper.WarDeployment("jaxws-samples-wsse-policy-username-unsecure-transport.war") { {
-         archive
-               .setManifest(new StringAsset("Manifest-Version: 1.0\n"
-                     + "Dependencies: org.jboss.ws.cxf.jbossws-cxf-client\n"))
-               .addClass(org.jboss.test.ws.jaxws.samples.wsse.policy.basic.JavaFirstServiceIface.class)
-               .addClass(org.jboss.test.ws.jaxws.samples.wsse.policy.basic.JavaFirstServiceImpl.class)
-               .addClass(org.jboss.test.ws.jaxws.samples.wsse.policy.basic.ServerUsernamePasswordCallback.class)
-               .addClass(org.jboss.test.ws.jaxws.samples.wsse.policy.basic.ServiceIface.class)
-               .addClass(org.jboss.test.ws.jaxws.samples.wsse.policy.basic.ServiceImpl.class)
-               .addClass(org.jboss.test.ws.jaxws.samples.wsse.policy.jaxws.SayHello.class)
-               .addClass(org.jboss.test.ws.jaxws.samples.wsse.policy.jaxws.SayHelloResponse.class)
-               .addAsWebInfResource(new File(JBossWSTestHelper.getTestResourcesDir() + "/jaxws/samples/wsse/policy/basic/username-unsecure-transport/JavaFirstPolicy.xml"), "classes/JavaFirstPolicy.xml")
-               .addAsWebInfResource(new File(JBossWSTestHelper.getTestResourcesDir() + "/jaxws/samples/wsse/policy/basic/username-unsecure-transport/WEB-INF/jaxws-endpoint-config.xml"), "jaxws-endpoint-config.xml")
-               .addAsWebInfResource(new File(JBossWSTestHelper.getTestResourcesDir() + "/jaxws/samples/wsse/policy/basic/username-unsecure-transport/WEB-INF/wsdl/SecurityService.wsdl"), "wsdl/SecurityService.wsdl")
-               .addAsWebInfResource(new File(JBossWSTestHelper.getTestResourcesDir() + "/jaxws/samples/wsse/policy/basic/username-unsecure-transport/WEB-INF/wsdl/SecurityService_schema1.xsd"), "wsdl/SecurityService_schema1.xsd")
-               .setWebXML(new File(JBossWSTestHelper.getTestResourcesDir() + "/jaxws/samples/wsse/policy/basic/username-unsecure-transport/WEB-INF/web.xml"));
-         }
-      });
-      return list.toArray(new BaseDeployment<?>[list.size()]);
-   }
-
    public static Test suite()
    {
-      return new JBossWSCXFTestSetup(UsernameTestCase.class, JBossWSTestHelper.writeToFile(createDeployments()));
+      return new JBossWSCXFTestSetup(UsernameTestCase.class, "jaxws-samples-wsse-policy-username-unsecure-transport.war");
    }
 
    public void test() throws Exception
@@ -84,8 +55,8 @@ public final class UsernameTestCase extends JBossWSTest
       URL wsdlURL = new URL(serviceURL + "?wsdl");
       Service service = Service.create(wsdlURL, serviceName);
       ServiceIface proxy = (ServiceIface)service.getPort(ServiceIface.class);
-      setupWsse((BindingProvider)proxy, "kermit");
       ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceURL.replaceFirst("8080", "7070"));
+      setupWsse((BindingProvider)proxy, "kermit");
       assertEquals("Secure Hello World!", proxy.sayHello());
    }
 
@@ -95,8 +66,9 @@ public final class UsernameTestCase extends JBossWSTest
       URL wsdlURL = new URL(serviceURL + "?wsdl");
       Service service = Service.create(wsdlURL, serviceName);
       ServiceIface proxy = (ServiceIface)service.getPort(ServiceIface.class);
-      setupWsse((BindingProvider)proxy, "snoopy");
       ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceURL.replaceFirst("8080", "7070"));
+
+      setupWsse((BindingProvider)proxy, "snoopy");
       try
       {
          proxy.sayHello();
@@ -114,10 +86,11 @@ public final class UsernameTestCase extends JBossWSTest
       URL wsdlURL = new URL(serviceURL + "?wsdl");
       Service service = Service.create(wsdlURL, serviceName);
       ServiceIface proxy = (ServiceIface)service.getPort(ServiceIface.class);
+      ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceURL.replaceFirst("8080", "7070"));
+
       setupWsseNoCBH((BindingProvider)proxy, "kermit", "thefrog");
       assertEquals("Secure Hello World!", proxy.sayHello());
       setupWsseNoCBH((BindingProvider)proxy, "kermit", "wrongpassword");
-      ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceURL.replaceFirst("8080", "7070"));
       try
       {
          proxy.sayHello();
@@ -136,6 +109,7 @@ public final class UsernameTestCase extends JBossWSTest
       Service service = Service.create(wsdlURL, serviceName);
       JavaFirstServiceIface proxy = (JavaFirstServiceIface)service.getPort(JavaFirstServiceIface.class);
       ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, javaFirstServiceURL.replaceFirst("8080", "7070"));
+
       setupWsse((BindingProvider)proxy, "kermit");
       assertEquals("Secure Hello World!", proxy.sayHello());
    }
@@ -146,8 +120,8 @@ public final class UsernameTestCase extends JBossWSTest
       URL wsdlURL = new URL(javaFirstServiceURL + "?wsdl");
       Service service = Service.create(wsdlURL, serviceName);
       JavaFirstServiceIface proxy = (JavaFirstServiceIface)service.getPort(JavaFirstServiceIface.class);
-      setupWsse((BindingProvider)proxy, "snoopy");
       ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, javaFirstServiceURL.replaceFirst("8080", "7070"));
+      setupWsse((BindingProvider)proxy, "snoopy");
       try
       {
          proxy.sayHello();

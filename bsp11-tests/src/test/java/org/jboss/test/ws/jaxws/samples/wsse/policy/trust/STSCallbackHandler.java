@@ -16,34 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jboss.test.ws.jaxws.samples.wsse.policy.trust.shared;
+package org.jboss.test.ws.jaxws.samples.wsse.policy.trust;
 
 import java.io.IOException;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
+import org.apache.ws.security.WSPasswordCallback;
 
-import org.apache.wss4j.common.ext.WSPasswordCallback;
-
-public class ClientCallbackHandler implements CallbackHandler {
+public class STSCallbackHandler implements CallbackHandler {
 
     public void handle(Callback[] callbacks) throws IOException,
             UnsupportedCallbackException {
         for (int i = 0; i < callbacks.length; i++) {
             if (callbacks[i] instanceof WSPasswordCallback) {
                 WSPasswordCallback pc = (WSPasswordCallback) callbacks[i];
-                if ("myclientkey".equals(pc.getIdentifier())) {
-                    pc.setPassword("ckpass");
+                if ("mystskey".equals(pc.getIdentifier())) {
+                    pc.setPassword("stskpass");
                     break;
-                } else if ("alice".equals(pc.getIdentifier())) {
-                    pc.setPassword("clarinet");
-                    break;
-                } else if ("bob".equals(pc.getIdentifier())) {
-                    pc.setPassword("trombone");
-                    break;
-                } else if ("myservicekey".equals(pc.getIdentifier())) {  // rls test  added for bearer test
-                   pc.setPassword("skpass");
-                   break;
                 }
             }
         }

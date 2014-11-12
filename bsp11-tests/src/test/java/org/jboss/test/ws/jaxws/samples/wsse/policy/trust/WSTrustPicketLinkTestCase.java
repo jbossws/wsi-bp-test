@@ -31,9 +31,7 @@ import junit.framework.Test;
 
 import org.apache.cxf.Bus;
 import org.apache.cxf.BusFactory;
-import org.jboss.wsf.test.CryptoHelper;
 import org.jboss.wsf.test.JBossWSTest;
-import org.jboss.test.ws.jaxws.samples.wsse.policy.trust.service.ServiceIface;
 
 /**
  * WS-Trust test case using PicketLink implementation of STS
@@ -43,11 +41,14 @@ import org.jboss.test.ws.jaxws.samples.wsse.policy.trust.service.ServiceIface;
  */
 public final class WSTrustPicketLinkTestCase extends JBossWSTest
 {
+   private final String serviceURL = "http://" + getServerHost() + ":8080/jaxws-samples-wsse-policy-trust/SecurityService";
+   private final String stsURL = "http://" + getServerHost() + ":8080/jaxws-samples-wsse-policy-trustPicketLink-sts/PicketLinkSTS";
+
    public static Test suite()
    {
       //deploy client, STS and service; start a security domain to be used by the STS for authenticating client
       return WSTrustTestUtils.getTestSetup(WSTrustPicketLinkTestCase.class,
-            DeploymentArchives.CLIENT_JAR + " " + DeploymentArchives.STS_PICKETLINK_WAR + " " + DeploymentArchives.SERVER_WAR);
+            "jaxws-samples-wsse-policy-trust-client.jar jaxws-samples-wsse-policy-trustPicketLink-sts.war jaxws-samples-wsse-policy-trust.war");
    }
 
    public void test() throws Exception
@@ -58,20 +59,16 @@ public final class WSTrustPicketLinkTestCase extends JBossWSTest
          BusFactory.setThreadDefaultBus(bus);
          
          final QName serviceName = new QName("http://www.jboss.org/jbossws/ws-extensions/wssecuritypolicy", "SecurityService");
-         final URL wsdlURL = new URL("http://" + getServerHost() + ":8080/jaxws-samples-wsse-policy-trust/SecurityService?wsdl");
+         final URL wsdlURL = new URL(serviceURL + "?wsdl");
          Service service = Service.create(wsdlURL, serviceName);
          ServiceIface proxy = (ServiceIface) service.getPort(ServiceIface.class);
-         ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, "http://" + getServerHost() + ":8080/jaxws-samples-wsse-policy-trust/SecurityService".replaceFirst("8080", "7070"));
+         ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceURL.replaceFirst("8080", "7070"));
+
          final QName stsServiceName = new QName("urn:picketlink:identity-federation:sts", "PicketLinkSTS");
          final QName stsPortName = new QName("urn:picketlink:identity-federation:sts", "PicketLinkSTSPort");
-         WSTrustTestUtils.setupWsseAndSTSClient(proxy, bus, "http://" + getServerHost() + ":8080/jaxws-samples-wsse-policy-trustPicketLink-sts/PicketLinkSTS?wsdl",
-               stsServiceName, stsPortName);
+         WSTrustTestUtils.setupWsseAndSTSClient(proxy, bus, stsURL + "?wsdl", stsServiceName, stsPortName);
          
-         try {
-            assertEquals("WS-Trust Hello World!", proxy.sayHello());
-         } catch (Exception e) {
-            throw CryptoHelper.checkAndWrapException(e);
-         }
+         assertEquals("WS-Trust Hello World!", proxy.sayHello());
       }
       finally
       {

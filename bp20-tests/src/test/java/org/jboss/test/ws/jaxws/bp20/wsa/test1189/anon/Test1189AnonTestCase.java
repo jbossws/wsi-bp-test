@@ -33,6 +33,7 @@ import org.apache.cxf.ws.addressing.AddressingProperties;
 import org.apache.cxf.ws.addressing.AttributedURIType;
 import org.apache.cxf.ws.addressing.EndpointReferenceType;
 import org.apache.cxf.ws.addressing.JAXWSAConstants;
+import org.apache.cxf.ws.addressing.impl.AddressingPropertiesImpl;
 import org.jboss.test.ws.jaxws.bp20.common.BP20Test;
 import org.jboss.wsf.test.JBossWSCXFTestSetup;
 
@@ -58,7 +59,7 @@ public class Test1189AnonTestCase extends BP20Test
       
       
       EndpointReferenceType wsaTo = new EndpointReferenceType();
-      AddressingProperties addrProperties = new AddressingProperties();
+      AddressingProperties addrProperties = new AddressingPropertiesImpl();
       AttributedURIType epr = new AttributedURIType();
       epr.setValue( "http://" + getServerHost() + ":8080/jaxws-bp20test1189-anon/Test1189Anon");
       wsaTo.setAddress(epr);
@@ -72,6 +73,7 @@ public class Test1189AnonTestCase extends BP20Test
       }
       catch (Exception e)
       {
+    	 e.printStackTrace();
          assertTrue("only anonymous supported error message is expected", e.getMessage().contains("Found non-anonymous address but only anonymous supported"));
       }
  

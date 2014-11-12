@@ -34,7 +34,6 @@ import org.apache.cxf.BusFactory;
 import org.apache.cxf.ws.security.SecurityConstants;
 import org.jboss.ws.api.configuration.ClientConfigUtil;
 import org.jboss.wsf.test.ClientHelper;
-import org.jboss.wsf.test.CryptoHelper;
 
 public class SignEncryptHelper implements ClientHelper
 {
@@ -92,12 +91,14 @@ public class SignEncryptHelper implements ClientHelper
       }
       catch (SOAPFaultException e)
       {
-         throw CryptoHelper.checkAndWrapException(e);
+         throw new Exception("Please check that the Bouncy Castle provider is installed.", e);
       }
    }
    
    private void setupWsse(ServiceIface proxy)
    {
+      String address = targetEndpoint.replaceFirst("8080", "7070");
+      ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, address);
       ((BindingProvider)proxy).getRequestContext().put(SecurityConstants.CALLBACK_HANDLER, new KeystorePasswordCallback());
       ((BindingProvider)proxy).getRequestContext().put(SecurityConstants.SIGNATURE_PROPERTIES, Thread.currentThread().getContextClassLoader().getResource("META-INF/alice.properties"));
       ((BindingProvider)proxy).getRequestContext().put(SecurityConstants.ENCRYPT_PROPERTIES, Thread.currentThread().getContextClassLoader().getResource("META-INF/alice.properties"));

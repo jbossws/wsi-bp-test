@@ -21,10 +21,7 @@
  */
 package org.jboss.test.ws.jaxws.samples.wsse.policy.secconv;
 
-import java.io.File;
 import java.net.URL;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
@@ -32,13 +29,9 @@ import javax.xml.ws.Service;
 
 import junit.framework.Test;
 
-import org.apache.cxf.ws.security.SecurityConstants;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.test.ws.jaxws.samples.wsse.policy.basic.KeystorePasswordCallback;
 import org.jboss.wsf.test.JBossWSCXFTestSetup;
 import org.jboss.wsf.test.JBossWSTest;
-import org.jboss.wsf.test.JBossWSTestHelper;
-import org.jboss.wsf.test.JBossWSTestHelper.BaseDeployment;
 
 /**
  * Secure Conversation testcase
@@ -53,62 +46,32 @@ import org.jboss.wsf.test.JBossWSTestHelper.BaseDeployment;
  */
 public final class SecureConversationTestCase extends JBossWSTest
 {
-   public static BaseDeployment<?>[] createDeployments() {
-      List<BaseDeployment<?>> list = new LinkedList<BaseDeployment<?>>();
-      list.add(new JBossWSTestHelper.WarDeployment("jaxws-samples-wsse-policy-secconv.war") { {
-         archive
-               .setManifest(new StringAsset("Manifest-Version: 1.0\n"
-                     + "Dependencies: org.jboss.ws.cxf.jbossws-cxf-client\n"))
-               .addClass(org.jboss.test.ws.jaxws.samples.wsse.policy.jaxws.SayHello.class)
-               .addClass(org.jboss.test.ws.jaxws.samples.wsse.policy.jaxws.SayHelloResponse.class)
-               .addClass(org.jboss.test.ws.jaxws.samples.wsse.policy.secconv.KeystorePasswordCallback.class)
-               .addClass(org.jboss.test.ws.jaxws.samples.wsse.policy.secconv.ServiceIface.class)
-               .addClass(org.jboss.test.ws.jaxws.samples.wsse.policy.secconv.ServiceImpl.class)
-               .addAsWebInfResource(new File(JBossWSTestHelper.getTestResourcesDir() + "/jaxws/samples/wsse/policy/secconv/WEB-INF/bob.jks"), "classes/bob.jks")
-               .addAsWebInfResource(new File(JBossWSTestHelper.getTestResourcesDir() + "/jaxws/samples/wsse/policy/secconv/WEB-INF/bob.properties"), "classes/bob.properties")
-               .addAsWebInfResource(new File(JBossWSTestHelper.getTestResourcesDir() + "/jaxws/samples/wsse/policy/secconv/WEB-INF/wsdl/SecurityService.wsdl"), "wsdl/SecurityService.wsdl")
-               .addAsWebInfResource(new File(JBossWSTestHelper.getTestResourcesDir() + "/jaxws/samples/wsse/policy/secconv/WEB-INF/wsdl/SecurityService_schema1.xsd"), "wsdl/SecurityService_schema1.xsd");
-         }
-      });
-      list.add(new JBossWSTestHelper.JarDeployment("jaxws-samples-wsse-policy-secconv-client.jar") { {
-         archive
-               .addManifest()
-               .addAsManifestResource(new File(JBossWSTestHelper.getTestResourcesDir() + "/jaxws/samples/wsse/policy/secconv/META-INF/alice.jks"), "alice.jks")
-               .addAsManifestResource(new File(JBossWSTestHelper.getTestResourcesDir() + "/jaxws/samples/wsse/policy/secconv/META-INF/alice.properties"), "alice.properties");
-         }
-      });
-      return list.toArray(new BaseDeployment<?>[list.size()]);
-   }
+   private final String serviceURL = "http://" + getServerHost() + ":8080/jaxws-samples-wsse-policy-secconv/SecureConversationService";
 
    public static Test suite()
    {
-      return new JBossWSCXFTestSetup(SecureConversationTestCase.class, JBossWSTestHelper.writeToFile(createDeployments()));
+      return new JBossWSCXFTestSetup(SecureConversationTestCase.class, "jaxws-samples-wsse-policy-secconv.war,jaxws-samples-wsse-policy-secconv-client.jar");
    }
    
    public void test() throws Exception
    {
       QName serviceName = new QName("http://www.jboss.org/jbossws/ws-extensions/wssecuritypolicy", "SecurityService");
-      URL wsdlURL = new URL("http://" + getServerHost() + ":8080/jaxws-samples-wsse-policy-secconv/SecureConversationService?wsdl");
+      URL wsdlURL = new URL(serviceURL + "?wsdl");
       Service service = Service.create(wsdlURL, serviceName);
       ServiceIface proxy = (ServiceIface)service.getPort(ServiceIface.class);
-      setupWsse(proxy, true);
-      ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, "http://" + getServerHost() + ":7070/jaxws-samples-wsse-policy-secconv/SecureConversationServic");
+      setupWsse(proxy);
+      ((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceURL.replaceFirst("8080", "7070"));
 
       assertTrue(proxy.sayHello().startsWith("Secure Conversation Hello World!"));
       assertTrue(proxy.sayHello().startsWith("Secure Conversation Hello World!"));
    }
 
-   private void setupWsse(ServiceIface proxy, boolean streaming)
+   private void setupWsse(ServiceIface proxy)
    {
       ((BindingProvider)proxy).getRequestContext().put("ws-security.callback-handler.sct", new KeystorePasswordCallback());
       ((BindingProvider)proxy).getRequestContext().put("ws-security.signature.properties.sct", Thread.currentThread().getContextClassLoader().getResource("META-INF/alice.properties"));
       ((BindingProvider)proxy).getRequestContext().put("ws-security.encryption.properties.sct", Thread.currentThread().getContextClassLoader().getResource("META-INF/alice.properties"));
       ((BindingProvider)proxy).getRequestContext().put("ws-security.signature.username.sct", "alice");
       ((BindingProvider)proxy).getRequestContext().put("ws-security.encryption.username.sct", "bob");
-      if (streaming)
-      {
-         ((BindingProvider)proxy).getRequestContext().put(SecurityConstants.ENABLE_STREAMING_SECURITY, "true");
-         ((BindingProvider)proxy).getResponseContext().put(SecurityConstants.ENABLE_STREAMING_SECURITY, "true");
-      }
    }
 }

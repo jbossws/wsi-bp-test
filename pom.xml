@@ -26,20 +26,18 @@
     <test.classes.directory>${project.build.directory}/test-classes</test.classes.directory>
     <test.resources.directory>${project.build.directory}/test-resources</test.resources.directory>
  
-    <jbossws.cxf.version>5.0.0-SNAPSHOT</jbossws.cxf.version>
-    <jbossws.cxf-test-utils.version>5.0.0-SNAPSHOT</jbossws.cxf-test-utils.version>
+    <jbossws.cxf.version>4.3.0.Final</jbossws.cxf.version>
+    <jbossws.cxf-test-utils.version>4.3.0.CR1</jbossws.cxf-test-utils.version>
 
     <junit.version>4.10</junit.version>
-    <log4j.version>1.2.16</log4j.version>
-    <jbossws.wildfly800.version>5.0.0-SNAPSHOT</jbossws.wildfly800.version>
-    <jbossws.wildfly810.version>5.0.0-SNAPSHOT</jbossws.wildfly810.version>
-    <wildfly800.version>8.0.0.Final</wildfly800.version>
-    <wildfly810.version>8.1.0.Final</wildfly810.version>
-    <wildfly900.version>9.0.0.Alpha2-SNAPSHOT</wildfly900.version>
+    <log4j.version>1.2.14</log4j.version>
 
-    <ejb.api.version>1.0.2.Final</ejb.api.version>
-    <jaxb.api.version>1.0.4.Final</jaxb.api.version>
-    <jaxws.api.version>2.0.2.Final</jaxws.api.version>
+    <jboss720.version>7.2.0.Final</jboss720.version>
+    <wildfly800.version>8.0.1.Final-SNAPSHOT</wildfly800.version>
+
+    <ejb.api.version>1.0.1.Final</ejb.api.version>
+    <jaxb.api.version>1.0.3.Final</jaxb.api.version>
+    <jaxws.api.version>2.0.0.Final</jaxws.api.version>
     <jsr181.api.version>1.0-MR1</jsr181.api.version>
     <picketlink.version>2.1.7.Final</picketlink.version>
     <org.slf4j.version>1.6.1</org.slf4j.version>
@@ -101,22 +99,6 @@
       <artifactId>jboss-jaxb-api_2.2_spec</artifactId>
       <version>${jaxb.api.version}</version>
     </dependency>
-
-    <dependency>
-      <groupId>org.jboss.ws</groupId>
-      <artifactId>jbossws-wildfly810-server-integration</artifactId>
-      <version>${jbossws.wildfly810.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.ws</groupId>
-      <artifactId>jbossws-wildfly810-tests-integration</artifactId>
-      <version>${jbossws.wildfly810.version}</version>
-    </dependency>
-    <dependency>
-       <groupId>org.wildfly</groupId>
-       <artifactId>wildfly-webservices-tests-integration</artifactId>
-       <version>${wildfly900.version}</version>
-     </dependency>
 
     <dependency>
       <groupId>org.picketlink</groupId>
@@ -443,128 +425,20 @@
       </build>
     </profile>
 
-  <!--
-    Name:  wildfly800
-    Descr: WildFly-8.0.0 specific options
+    <!--
+    Name:  jboss720
+    Descr: JBoss-7.2.0 specific options
     -->
     <profile>
-      <id>wildfly800</id>
+      <id>jboss720</id>
       <properties>
-        <jboss.version>${wildfly800.version}</jboss.version>
-        <jbossws.integration.target>wildfly800</jbossws.integration.target>
-        <remote.port>8080</remote.port>
-        <remote.protocol>http-remoting</remote.protocol>
+        <jboss.version>${jboss720.version}</jboss.version>
+        <jbossws.integration.target>jboss720</jbossws.integration.target>
       </properties>
       <dependencies>
         <dependency>
-          <groupId>org.jboss.ws</groupId>
-          <artifactId>jbossws-wildfly800-tests-integration</artifactId>
-        </dependency>
-      </dependencies>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-              <compilerArguments>
-                <endorseddirs>${project.build.directory}/endorsed</endorseddirs>
-              </compilerArguments>
-            </configuration>
-          </plugin>
-          <plugin>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <argLine>${surefire.jvm.args} ${surefire.jvm.management.args} ${surefire.default-mgmt-serurity.args} -Djava.endorsed.dirs=${project.build.directory}/endorsed</argLine>
-              <excludes combine.children="append">
-                 <!--https://tools.oasis-open.org/issues/browse/WSBRSP-3(BSP3070)-->
-                 <!-- # [PLFED-390] PicketLink STS chokes on WS-Policy 1.5 tags -->
-                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/trust/WSTrustPicketLinkTestCase*</exclude>
-                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/trust/WSTrustTestCase*</exclude>
-                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/trust/WSTrustOnBehalfOfTestCase*</exclude>
-                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/trust/WSTrustActAsTestCase*</exclude>
-                 <!--https://tools.oasis-open.org/issues/browse/WSBRSP-4(BSP3032)-->
-                 <!--After WSBRSP-4 is resolved we can port KerberosTestCase(with spring installed)-->   
-                 <!--this broke the WSI-Analyzer-->
-                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/secconv/*TestCase*</exclude>
-                 <!--this broke the alogrithm conformance in wsi-bsp-->
-                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/basic/SignEncryptGCMTestCase*</exclude>
-                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/basic/AnnotatedSignEncryptTestCase*</exclude>
-              </excludes>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    
-    <!--
-    Name:  wildfly810
-    Descr: WildFly-8.1.0 specific options
-    -->
-    <profile>
-      <id>wildfly810</id>
-      <properties>
-        <jboss.version>${wildfly810.version}</jboss.version>
-        <jbossws.integration.target>wildfly810</jbossws.integration.target>
-        <remote.port>8080</remote.port>
-        <remote.protocol>http-remoting</remote.protocol>
-      </properties>
-      <dependencies>
-         <dependency>
-          <groupId>org.jboss.ws</groupId>
-          <artifactId>jbossws-wildfly810-tests-integration</artifactId>
-        </dependency>
-      </dependencies>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-              <compilerArguments>
-                <endorseddirs>${project.build.directory}/endorsed</endorseddirs>
-              </compilerArguments>
-            </configuration>
-          </plugin>
-          <plugin>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <argLine>${surefire.jvm.args} ${surefire.jvm.management.args} ${surefire.default-mgmt-serurity.args} -Djava.endorsed.dirs=${project.build.directory}/endorsed</argLine>
-              <excludes combine.children="append">
-                 <!--https://tools.oasis-open.org/issues/browse/WSBRSP-3(BSP3070)-->
-                 <!-- # [PLFED-390] PicketLink STS chokes on WS-Policy 1.5 tags -->
-                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/trust/WSTrustPicketLinkTestCase*</exclude>
-                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/trust/WSTrustTestCase*</exclude>
-                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/trust/WSTrustOnBehalfOfTestCase*</exclude>
-                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/trust/WSTrustActAsTestCase*</exclude>
-                 <!--https://tools.oasis-open.org/issues/browse/WSBRSP-4(BSP3032)-->
-                 <!--After WSBRSP-4 is resolved we can port KerberosTestCase(with spring installed)-->   
-                 <!--this broke the WSI-Analyzer-->
-                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/secconv/*TestCase*</exclude>
-                 <!--this broke the alogrithm conformance in wsi-bsp-->
-                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/basic/SignEncryptGCMTestCase*</exclude>
-                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/basic/AnnotatedSignEncryptTestCase*</exclude>
-              </excludes>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    
-    <!--
-    Name:  wildfly900
-    Descr: WildFly-9.0.0 specific options
-    -->
-    <profile>
-      <id>wildfly900</id>
-      <properties>
-        <jboss.version>${wildfly900.version}</jboss.version>
-        <jbossws.integration.target>wildfly900</jbossws.integration.target>
-        <remote.port>8080</remote.port>
-        <remote.protocol>http-remoting</remote.protocol>
-      </properties>
-      <dependencies>
-        <dependency>
-          <groupId>org.wildfly</groupId>
-          <artifactId>wildfly-webservices-tests-integration</artifactId>
+          <groupId>org.jboss.as</groupId>
+          <artifactId>jboss-as-webservices-tests-integration</artifactId>
           <version>${jboss.version}</version>
         </dependency>
       </dependencies>
@@ -582,20 +456,62 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
               <argLine>${surefire.jvm.args} ${surefire.jvm.management.args} ${surefire.default-mgmt-serurity.args} -Djava.endorsed.dirs=${project.build.directory}/endorsed</argLine>
-              <excludes combine.children="append">
+              <excludes>
                  <!--https://tools.oasis-open.org/issues/browse/WSBRSP-3(BSP3070)-->
                  <!-- # [PLFED-390] PicketLink STS chokes on WS-Policy 1.5 tags -->
                  <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/trust/WSTrustPicketLinkTestCase*</exclude>
                  <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/trust/WSTrustTestCase*</exclude>
-                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/trust/WSTrustOnBehalfOfTestCase*</exclude>
-                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/trust/WSTrustActAsTestCase*</exclude>
+
                  <!--https://tools.oasis-open.org/issues/browse/WSBRSP-4(BSP3032)-->
                  <!--After WSBRSP-4 is resolved we can port KerberosTestCase(with spring installed)-->   
                  <!--this broke the WSI-Analyzer-->
                  <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/secconv/*TestCase*</exclude>
                  <!--this broke the alogrithm conformance in wsi-bsp-->
                  <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/basic/SignEncryptGCMTestCase*</exclude>
-                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/basic/AnnotatedSignEncryptTestCase*</exclude>           
+                 
+              </excludes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!--
+    Name:  wildfly800
+    Descr: WildFly 8.0.0 specific options
+    -->
+    <profile>
+      <id>wildfly800</id>
+      <properties>
+        <jboss.version>${wildfly800.version}</jboss.version>
+        <jbossws.integration.target>wildfly800</jbossws.integration.target>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.wildfly</groupId>
+          <artifactId>wildfly-webservices-tests-integration</artifactId>
+          <version>${jboss.version}</version>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>${surefire.jvm.args} ${surefire.jvm.management.args} ${surefire.default-mgmt-serurity.args} -Djava.endorsed.dirs=${project.build.directory}/endorsed</argLine>
+              <excludes>
+                 <!--https://tools.oasis-open.org/issues/browse/WSBRSP-3(BSP3070)-->
+                 <!-- # [PLFED-390] PicketLink STS chokes on WS-Policy 1.5 tags -->
+                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/trust/WSTrustPicketLinkTestCase*</exclude>
+                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/trust/WSTrustTestCase*</exclude>
+
+                 <!--https://tools.oasis-open.org/issues/browse/WSBRSP-4(BSP3032)-->
+                 <!--After WSBRSP-4 is resolved we can port KerberosTestCase(with spring installed)-->   
+                 <!--this broke the WSI-Analyzer-->
+                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/secconv/*TestCase*</exclude>
+                 <!--this broke the alogrithm conformance in wsi-bsp-->
+                 <exclude>org/jboss/test/ws/jaxws/samples/wsse/policy/basic/SignEncryptGCMTestCase*</exclude>
+                 
               </excludes>
             </configuration>
           </plugin>
