@@ -305,7 +305,10 @@
 
 	<profiles>
 
-		<!-- Name: debug Descr: Enable remote debuging for tests -->
+		<!--
+			Name:  debug
+			Descr: Enable remote debuging for tests
+		-->
 		<profile>
 			<id>debug</id>
 			<activation>
@@ -336,7 +339,10 @@
 		  </build>
 		</profile>
 
-		<!-- Name: wildfly900 Descr: WildFly-9.0.0 specific options -->
+		<!--
+			Name:  wildfly900
+			Descr: WildFly-9.0.0 specific options
+		-->
 		<profile>
 			<id>wildfly900</id>
 			<properties>
@@ -384,7 +390,10 @@
 
 
 
-		<!-- Name: wildfly1000 Descr: WildFly-10.0.0 specific options -->
+		<!--
+			Name:  wildfly1000
+			Descr: WildFly-10.0.0 specific options
+		-->
 		<profile>
 			<id>wildfly1000</id>
 			<properties>
@@ -431,7 +440,7 @@
 		</profile>
 
 		<!--
-			Name: use-eap7-bom
+			Name:  use-eap7-bom
 			Descr: Using versions defined in EAP 7 BOM
 		-->
 		<profile>
@@ -472,6 +481,11 @@
 			</dependencies>
 		</profile>
 
+
+		<!--
+			Name:  exclude-integration-tests-unlimited-strength-related
+			Descr: Exclude tests that need JCE Unlimited Strength Jurisdiction Policy Files to be installed on JDK
+		-->
 		<profile>
 			<id>exclude-integration-tests-unlimited-strength-related</id>
 			<activation>

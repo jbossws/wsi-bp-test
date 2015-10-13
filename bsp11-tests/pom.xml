@@ -23,7 +23,10 @@
 	</dependencies>  
 	<!-- Profiles -->
 	<profiles>
-		<!-- Name: noprepare Descr: Skip test preparation with -Dnoprepare -->
+		<!--
+			Name:  noprepare
+			Descr: Skip test preparation with -Dnoprepare
+		-->
 		<profile>
 			<id>noprepare</id>
 			<activation>
