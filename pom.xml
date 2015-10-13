@@ -42,10 +42,7 @@
 
 	<!-- Modules -->
 	<modules>
-                <module>bp-common</module>
-		<module>bp12-tests</module>
-		<module>bp20-tests</module>
-		<module>bsp11-tests</module>
+		<module>bp-common</module>
 	</modules>
 
 	<!-- Properties -->
@@ -304,6 +301,72 @@
 
 
 	<profiles>
+
+		<!--
+			Name:  all
+			Descr: Execute all testsuites - BP1.2, BP2.0 and BSP1.1
+		-->
+		<profile>
+			<id>all</id>
+			<activation><activeByDefault>true</activeByDefault>
+				<property>
+					<name>ts.all</name>
+				</property>
+			</activation>
+			<modules>
+				<module>bp12-tests</module>
+				<module>bp20-tests</module>
+				<module>bsp11-tests</module>
+			</modules>
+		</profile>
+
+		<!--
+			Name:  bp12
+			Descr: Execute testsuite from bp12-tests module
+		-->
+		<profile>
+			<id>bp12</id>
+			<activation>
+				<property>
+					<name>ts.bp12</name>
+				</property>
+			</activation>
+			<modules>
+				<module>bp12-tests</module>
+			</modules>
+		</profile>
+
+		<!--
+			Name:  bp20
+			Descr: Execute testsuite from bp20-tests module
+		-->
+		<profile>
+			<id>bp20</id>
+			<activation>
+				<property>
+					<name>ts.bp20</name>
+				</property>
+			</activation>
+			<modules>
+				<module>bp20-tests</module>
+			</modules>
+		</profile>
+
+		<!--
+			Name:  bsp11
+			Descr: Execute testsuite from bsp11-tests module
+		-->
+		<profile>
+			<id>bsp11</id>
+			<activation>
+				<property>
+					<name>ts.bsp11</name>
+				</property>
+			</activation>
+			<modules>
+				<module>bsp11-tests</module>
+			</modules>
+		</profile>
 
 		<!--
 			Name:  debug
