@@ -1,14 +1,49 @@
 def root = new XmlParser().parse(project.properties['inputFile'])
 
 /**
- * Fix logging: remove CONSOLE handler and set a specific log file
+ * Fix logging: optionally remove CONSOLE handler and set a specific log file
  *
  */
 def logHandlers = root.profile.subsystem.'root-logger'.handlers[0]
 def consoleHandler = logHandlers.find{it.@name == 'CONSOLE'}
-logHandlers.remove(consoleHandler)
+if (!project.properties['enableServerLoggingToConsole']) logHandlers.remove(consoleHandler)
 def file = root.profile.subsystem.'periodic-rotating-file-handler'.file[0]
 file.attributes()['path'] = project.properties['serverLog']
+
+/**
+ * Add a security-domain block like this:
+ *
+ * <security-domain name="JAASJBossWS" cache-type="default">
+ *   <authentication>
+ *     <login-module code="UsersRoles" flag="required">
+ *       <module-option name="usersProperties" value="/mnt/ssd/jbossws/stack/cxf/trunk/modules/testsuite/cxf-tests/target/test-classes/jbossws-users.properties"/>
+ *       <module-option name="unauthenticatedIdentity" value="anonymous"/>
+ *       <module-option name="rolesProperties" value="/mnt/ssd/jbossws/stack/cxf/trunk/modules/testsuite/cxf-tests/target/test-classes/jbossws-roles.properties"/>
+ *     </login-module>
+ *   </authentication>
+ * </security-domain>
+ *
+ */
+
+def subsystems = root.profile.subsystem
+def securityDomains = null
+for (item in subsystems) {
+    if (item.name().getNamespaceURI().contains("urn:jboss:domain:security:")) {
+       for (element in item) {
+           if (element.name().getLocalPart().equals("security-domains")) {
+              securityDomains = element
+           }
+       }
+       break
+    }
+}
+def securityDomain = securityDomains.appendNode('security-domain', ['name':'JAASJBossWS','cache-type':'default'])
+def authentication = securityDomain.appendNode('authentication')
+def loginModule = authentication.appendNode('login-module', ['code':'UsersRoles','flag':'required'])
+loginModule.appendNode('module-option', ['name':'unauthenticatedIdentity','value':'anonymous'])
+loginModule.appendNode('module-option', ['name':'usersProperties','value':project.properties['usersPropFile']])
+loginModule.appendNode('module-option', ['name':'rolesProperties','value':project.properties['rolesPropFile']])
+
 
 /**
  * Add a security-domain block like this:
@@ -25,13 +60,12 @@ file.attributes()['path'] = project.properties['serverLog']
  *
  */
 
-def securityDomains = root.profile.subsystem.'security-domains'[0]
-def securityDomain = securityDomains.appendNode('security-domain', ['name':'JBossWS','cache-type':'default'])
-def authentication = securityDomain.appendNode('authentication')
-def loginModule = authentication.appendNode('login-module', ['code':'UsersRoles','flag':'required'])
-loginModule.appendNode('module-option', ['name':'unauthenticatedIdentity','value':'anonymous'])
-loginModule.appendNode('module-option', ['name':'usersProperties','value':project.properties['usersPropFile']])
-loginModule.appendNode('module-option', ['name':'rolesProperties','value':project.properties['rolesPropFile']])
+def jbsecurityDomain = securityDomains.appendNode('security-domain', ['name':'JBossWS','cache-type':'default'])
+def jbauthentication = jbsecurityDomain.appendNode('authentication')
+def jbloginModule = jbauthentication.appendNode('login-module', ['code':'UsersRoles','flag':'required'])
+jbloginModule.appendNode('module-option', ['name':'unauthenticatedIdentity','value':'anonymous'])
+jbloginModule.appendNode('module-option', ['name':'usersProperties','value':project.properties['usersPropFile']])
+jbloginModule.appendNode('module-option', ['name':'rolesProperties','value':project.properties['rolesPropFile']])
 
 /**
  * Add a security-domain block like this:
